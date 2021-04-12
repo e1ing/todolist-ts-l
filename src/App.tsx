@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import './App.css';
 import TodoList from "./TodoList";
+import {v1} from "uuid";
 
 export type TaskType = {
-    id: number,
+    id: string,
     title: string,
     isDone: boolean
 }
@@ -12,31 +13,41 @@ export type FilterValuesType = "all" | "active" | "completed";
 function App() {
 //BLL:
     //local state - локальное хранилище, state устанавливает и перерисовывает
+
     const [tasks, setTasks] = useState<Array<TaskType>>([
-        {id: 1, title: "HTML", isDone: true},
-        {id: 2, title: "CSS", isDone: true},
-        {id: 3, title: "React", isDone: false},
-        {id: 4, title: "React", isDone: false}
+        {id: v1(), title: "HTML", isDone: true},
+        {id: v1(), title: "CSS", isDone: true},
+        {id: v1(), title: "React", isDone: false},
+        {id: v1(), title: "React", isDone: false}
     ]);
 
-    const [filter, setFilter] = useState<"all" | "active" | "completed">("completed")
+    const [filter, setFilter] = useState<"all" | "active" | "completed">("all")
 
 //Remove tasks
-    function removeTask(taskID: number) {
+    function removeTask(taskID: string) {
         const filteredTasks = tasks.filter(t => t.id !== taskID); //новый массив замисыватся фильтруя по условию
         console.log(tasks);
         //тут надо обновлять UI
         setTasks(filteredTasks);
     }
-    function changeFilter (value: FilterValuesType) {
-    setFilter(value);
+
+    function addTask(title: string) {
+        const newTask: TaskType = {
+            id: v1(),
+            title: title,
+            isDone: false
+        };
+        setTasks([newTask,...tasks]);
     }
 
+    function changeFilter(value: FilterValuesType) {
+        setFilter(value);
+    }
 
 
 //UI:
     //функция
-    function getTasksForTodolist(){
+    function getTasksForTodolist() {
         switch (filter) {
             case "active":
                 return tasks.filter(t => !t.isDone)
@@ -54,6 +65,7 @@ function App() {
                 tasks={getTasksForTodolist()}
                 removeTask={removeTask}
                 changeFilter={changeFilter}
+                addTask = {addTask}
             />
         </div>
     );
