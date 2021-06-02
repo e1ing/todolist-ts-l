@@ -16,7 +16,7 @@ function AddItemForm(props: AddItemFormPropsType) {
     }
 
     const onClickAddItem = () => {
-        const trimmedTitle = title.trim() //обрезка пробелов впереди и сзади
+        const trimmedTitle = title.trim() //обрезка пробелов спереди и сзади
         if (trimmedTitle) {
             props.addItem(trimmedTitle)
         } else {
