@@ -30,7 +30,7 @@ type ChangeTaskTitleActionType = {
 
 let initialState: TasksStateType ={} //вариант
 
-/*type initialStateType = typeof initialState*/ //более гибко
+/*type initialStateType = typeof initialState *///более гибко
 
 export type ActionUnionType = RemoveTaskActionType|AddTaskActionType|
     ChangeTaskActionType|ChangeTaskTitleActionType|AddTodoListAT|RemoveTodoListAT

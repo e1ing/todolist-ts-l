@@ -5,6 +5,7 @@ import {v1} from "uuid";
 import AddItemForm from "./AddItemForm";
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
+import { useCallback } from 'react';
 
 
 export type TaskType = {
@@ -92,14 +93,14 @@ function App() {
     function changeTodoListTitle(title: string, todoListID: string) {
         setTodoLists(todoLists.map(tl => tl.id === todoListID ? {...tl, title: title} : tl));
     }
-    function addTodoList(title: string) {
+    const addTodoList = useCallback((title: string) =>{
         const newTodoListId = v1()
         const newTodoList: TodoListType = {
             id: newTodoListId, title, filter: "all"
         }
         setTodoLists([...todoLists, newTodoList])
         setTasks({...tasks, [newTodoListId]: []})
-    }
+    }, [])
 
 
 //UI:

@@ -1,9 +1,11 @@
-import React, {useState, KeyboardEvent, ChangeEvent} from 'react';
+import React, {useState, KeyboardEvent, ChangeEvent, useCallback} from 'react';
 import {FilterValuesType, TaskType} from "./App";
 import AddItemForm from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
 import {Button, Checkbox, IconButton} from "@material-ui/core";
 import {CheckBox, Delete} from "@material-ui/icons";
+import {TodoListType} from "./AppWithRedux";
+import {Task} from "./Task";
 
 type TodoListPropsType = {
     todoListID: string
@@ -19,15 +21,15 @@ type TodoListPropsType = {
     changeTodoListTitle: (title: string, todoListID: string) => void
 }
 
-function TodoList(props: TodoListPropsType) {
+export const TodoList = React.memo((props: TodoListPropsType) => {
     // const {filter, tasks, title: tlTitte, addTask, removeTask, changeFilter} = props
     //все переменные-свойства в функции определяем как пропсы - деструктуризаация пропсов
     //также можно сразу вместо пропсов все свойства прописать тут (props: TodoListPropsType)
 
     /*  const [title, setTitle] = useState<string>("")
       const [error, setError] = useState<boolean>(false)*/
-
-    const tasksJSXElements = props.tasks.map(t => {
+    console.log("lalala")
+    /*const tasksJSXElements = props.tasks.map(t => {
         const removeTask = () => {
             props.removeTask(t.id, props.todoListID)
         }
@@ -49,15 +51,28 @@ function TodoList(props: TodoListPropsType) {
                 </IconButton>
             </li>
         )
-    })
+    })*/
 
 
-    const onClickAllFilter = () => props.changeFilter("all", props.todoListID)
-    const onClickActiveFilter = () => props.changeFilter("active", props.todoListID)
-    const onClickCompletedFilter = () => props.changeFilter("completed", props.todoListID)
-    const onClickRemoveTodoList = () => props.removeTodoList(props.todoListID)
-    const addTask = (title: string) => props.addTask(title, props.todoListID)
-    const changeTodoListTitle = (title: string) => props.changeTodoListTitle(title, props.todoListID)
+    const onClickAllFilter = useCallback(() => props.changeFilter("all", props.todoListID), [props.changeFilter,  props.todoListID])
+    const onClickActiveFilter = useCallback(() => props.changeFilter("active", props.todoListID), [props.changeFilter, props.todoListID])
+    const onClickCompletedFilter = useCallback(() => props.changeFilter("completed", props.todoListID), [props.changeFilter, props.todoListID])
+    const onClickRemoveTodoList = useCallback(() => props.removeTodoList(props.todoListID), [props.removeTodoList, props.todoListID])
+    const addTask = useCallback((title: string) => props.addTask(title, props.todoListID), [props.addTask, props.todoListID])
+    const changeTodoListTitle = useCallback((title: string) => props.changeTodoListTitle(title, props.todoListID), [props.changeTodoListTitle,  props.todoListID])
+
+    const getTasksForTodoList = () => {
+        switch (props.filter) {
+            case "active":
+                return props.tasks.filter((t) => !t.isDone)
+            case "completed":
+                return props.tasks.filter((t) => t.isDone)
+            default:
+                return props.tasks
+        }
+    }
+
+    let newTasks = getTasksForTodoList()
 
 
     return (
@@ -73,7 +88,20 @@ function TodoList(props: TodoListPropsType) {
             <AddItemForm addItem={addTask}/>
 
             <ul style={{listStyle: "none", paddingLeft: "0px"}}>
-                {tasksJSXElements}
+                {
+                    newTasks.map(t => {
+                        return (
+                            <Task
+                                key={t.id}
+                                task={t}
+                                todolistId={props.todoListID}
+                                changeTaskStatus={props.changeTaskStatus}
+                                removeTask={props.removeTask}
+                                changeTaskTitle={props.removeTask}
+                            />
+                        )
+                    })
+                }
             </ul>
             <div>
                 <Button color={"primary"}
@@ -96,6 +124,6 @@ function TodoList(props: TodoListPropsType) {
             </div>
         </div>
     )
-}
+})
 
 export default TodoList;
